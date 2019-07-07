@@ -1,9 +1,9 @@
 // #include<c++/9.1.0/bits/stdc++.h>
 #include<iostream>
+#include<limits>
 using namespace std;
 typedef long long ll;
 ll n;
-
 typedef struct node
 {
 	ll sum ;
@@ -16,10 +16,11 @@ void build_tree(ll* arr, ll root, ll low, ll high)
 {
 	if(low == high)
 	{
-		seg_tree[low].sum = arr[low];
-		seg_tree[low].suffix_sum = arr[low];
-		seg_tree[low].prefix_sum = arr[low];
-		seg_tree[low].max_sum = arr[low];
+		// cout<<"\nlow: "<<arr[low];
+		seg_tree[root].sum = arr[low];
+		seg_tree[root].suffix_sum = arr[low];
+		seg_tree[root].prefix_sum = arr[low];
+		seg_tree[root].max_sum = arr[low];
 		return;
 	}
 	if(low > high)
@@ -38,11 +39,11 @@ node_t query(ll root, ll low, ll high, ll q_low, ll q_high)
 	node_t res;
 	res.sum = res.prefix_sum = INT_MIN;
 	res.suffix_sum =res.max_sum = INT_MIN;
-	if(low > q_high || high < q_high)
+	if(low > q_high || high < q_low)
 	{
 		return res;
 	}
-	if(low <= q_low && high >= q_high)
+	if(low >= q_low && high <= q_high)
 	{
 		res.sum = seg_tree[root].sum;
 		res.prefix_sum = seg_tree[root].prefix_sum;
@@ -51,7 +52,7 @@ node_t query(ll root, ll low, ll high, ll q_low, ll q_high)
 		return res;
 	}
 	ll mid = (low + high)/2;
-	if(mid >= high)
+	if(mid >= q_high)
 	{
 		return query(root*2+1, low, mid, q_low, q_high);
 	}
@@ -87,14 +88,19 @@ int main()
 			cin>>arr[i];
 		}
 		build_tree(arr, 0, 0, n-1);
-		cout<<"Tree build success\n";
+		// for (int i = 0; i < n*2; ++i)
+		// {
+		// 	cout<<seg_tree[i].sum<<" ";
+		// }
+		// cout<<"Tree build success\n";
 		ll queries;
 		cin>>queries;
 		while(queries--)
 		{
 			ll left, right;
 			cin>>left >> right;
-			node_t res = query(0, 0, n-1, left, right);
+			// cout<<left-1 <<" "<<right-1<<"\n";
+			node_t res = query(0, 0, n-1, left-1, right-1);
 			cout<<res.max_sum<<"\n";
 		}
 	}
